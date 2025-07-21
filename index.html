@@ -3,76 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSS Octahedron</title>
+  <title>3D Staircase</title>
   <style>
     body {
       margin: 0;
       background: #111;
-      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
       perspective: 1000px;
     }
 
     .scene {
-      width: 0;
-      height: 0;
-    }
-
-    .octahedron {
-      position: relative;
       transform-style: preserve-3d;
-      animation: spin 8s infinite linear;
+      transform: rotateX(30deg) rotateY(45deg);
     }
 
-    .face {
+    .step {
       position: absolute;
-      width: 0;
-      height: 0;
-      border-left: 100px solid transparent;
-      border-right: 100px solid transparent;
-      border-bottom: 173.2px solid rgba(0, 200, 255, 0.8); /* equilateral triangle */
-      transform-origin: 0 0;
-    }
-
-    /* Top pyramid */
-    .t1 { transform: rotateY(0deg)    rotateX( 54.74deg) translateZ(100px); }
-    .t2 { transform: rotateY(90deg)   rotateX( 54.74deg) translateZ(100px); }
-    .t3 { transform: rotateY(180deg)  rotateX( 54.74deg) translateZ(100px); }
-    .t4 { transform: rotateY(270deg)  rotateX( 54.74deg) translateZ(100px); }
-
-    /* Bottom pyramid */
-    .b1 { transform: rotateY(0deg)    rotateX(-54.74deg) translateZ(-100px); }
-    .b2 { transform: rotateY(90deg)   rotateX(-54.74deg) translateZ(-100px); }
-    .b3 { transform: rotateY(180deg)  rotateX(-54.74deg) translateZ(-100px); }
-    .b4 { transform: rotateY(270deg)  rotateX(-54.74deg) translateZ(-100px); }
-
-    @keyframes spin {
-      from {
-        transform: rotateX(0deg) rotateY(0deg);
-      }
-      to {
-        transform: rotateX(360deg) rotateY(360deg);
-      }
+      width: 100px;
+      height: 30px;
+      background: #4caf50;
+      border: 1px solid #333;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
   <div class="scene">
-    <div class="octahedron">
-      <!-- Top pyramid (4 triangles) -->
-      <div class="face t1"></div>
-      <div class="face t2"></div>
-      <div class="face t3"></div>
-      <div class="face t4"></div>
-
-      <!-- Bottom pyramid (4 triangles) -->
-      <div class="face b1"></div>
-      <div class="face b2"></div>
-      <div class="face b3"></div>
-      <div class="face b4"></div>
-    </div>
+    <!-- Steps (10 steps as example) -->
+    <div class="step" style="transform: translateY(0px)   translateZ(0px);"></div>
+    <div class="step" style="transform: translateY(-30px) translateZ(30px);"></div>
+    <div class="step" style="transform: translateY(-60px) translateZ(60px);"></div>
+    <div class="step" style="transform: translateY(-90px) translateZ(90px);"></div>
+    <div class="step" style="transform: translateY(-120px) translateZ(120px);"></div>
+    <div class="step" style="transform: translateY(-150px) translateZ(150px);"></div>
+    <div class="step" style="transform: translateY(-180px) translateZ(180px);"></div>
+    <div class="step" style="transform: translateY(-210px) translateZ(210px);"></div>
+    <div class="step" style="transform: translateY(-240px) translateZ(240px);"></div>
+    <div class="step" style="transform: translateY(-270px) translateZ(270px);"></div>
   </div>
 </body>
 </html>
