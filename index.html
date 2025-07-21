@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSS Octahedron</title>
   <style>
     body {
@@ -22,8 +22,6 @@
 
     .octahedron {
       position: relative;
-      width: 0;
-      height: 0;
       transform-style: preserve-3d;
       animation: spin 8s infinite linear;
     }
@@ -38,17 +36,17 @@
       transform-origin: 0 0;
     }
 
-    /* Top pyramid (4 faces) */
-    .f1 { transform: rotateY(0deg)    rotateX(45deg)    translateZ(0); }
-    .f2 { transform: rotateY(90deg)   rotateX(45deg)    translateZ(0); }
-    .f3 { transform: rotateY(180deg)  rotateX(45deg)    translateZ(0); }
-    .f4 { transform: rotateY(270deg)  rotateX(45deg)    translateZ(0); }
+    /* Top pyramid */
+    .t1 { transform: rotateY(0deg)    rotateX( 54.74deg) translateZ(100px); }
+    .t2 { transform: rotateY(90deg)   rotateX( 54.74deg) translateZ(100px); }
+    .t3 { transform: rotateY(180deg)  rotateX( 54.74deg) translateZ(100px); }
+    .t4 { transform: rotateY(270deg)  rotateX( 54.74deg) translateZ(100px); }
 
-    /* Bottom pyramid (4 faces) */
-    .f5 { transform: rotateY(0deg)    rotateX(-45deg)   translateZ(0); }
-    .f6 { transform: rotateY(90deg)   rotateX(-45deg)   translateZ(0); }
-    .f7 { transform: rotateY(180deg)  rotateX(-45deg)   translateZ(0); }
-    .f8 { transform: rotateY(270deg)  rotateX(-45deg)   translateZ(0); }
+    /* Bottom pyramid */
+    .b1 { transform: rotateY(0deg)    rotateX(-54.74deg) translateZ(-100px); }
+    .b2 { transform: rotateY(90deg)   rotateX(-54.74deg) translateZ(-100px); }
+    .b3 { transform: rotateY(180deg)  rotateX(-54.74deg) translateZ(-100px); }
+    .b4 { transform: rotateY(270deg)  rotateX(-54.74deg) translateZ(-100px); }
 
     @keyframes spin {
       from {
@@ -63,14 +61,17 @@
 <body>
   <div class="scene">
     <div class="octahedron">
-      <div class="face f1"></div>
-      <div class="face f2"></div>
-      <div class="face f3"></div>
-      <div class="face f4"></div>
-      <div class="face f5"></div>
-      <div class="face f6"></div>
-      <div class="face f7"></div>
-      <div class="face f8"></div>
+      <!-- Top pyramid (4 triangles) -->
+      <div class="face t1"></div>
+      <div class="face t2"></div>
+      <div class="face t3"></div>
+      <div class="face t4"></div>
+
+      <!-- Bottom pyramid (4 triangles) -->
+      <div class="face b1"></div>
+      <div class="face b2"></div>
+      <div class="face b3"></div>
+      <div class="face b4"></div>
     </div>
   </div>
 </body>
