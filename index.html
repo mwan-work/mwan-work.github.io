@@ -1,71 +1,77 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spinning Cube</title>
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #222;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Octahedron</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+    }
 
-        .scene {
-            width: 200px;
-            height: 200px;
-            perspective: 800px;
-        }
+    .scene {
+      width: 0;
+      height: 0;
+    }
 
-        .cube {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transform: rotateX(0deg) rotateY(0deg);
-            animation: spin 5s infinite linear;
-        }
+    .octahedron {
+      position: relative;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      animation: spin 8s infinite linear;
+    }
 
-        .cube div {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 2px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
+    .face {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+      border-bottom: 173.2px solid rgba(0, 200, 255, 0.8); /* equilateral triangle */
+      transform-origin: 0 0;
+    }
 
-        .front  { transform: rotateY(0deg) translateZ(100px); }
-        .back   { transform: rotateY(180deg) translateZ(100px); }
-        .left   { transform: rotateY(-90deg) translateZ(100px); }
-        .right  { transform: rotateY(90deg) translateZ(100px); }
-        .top    { transform: rotateX(90deg) translateZ(100px); }
-        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+    /* Top pyramid (4 faces) */
+    .f1 { transform: rotateY(0deg)    rotateX(45deg)    translateZ(0); }
+    .f2 { transform: rotateY(90deg)   rotateX(45deg)    translateZ(0); }
+    .f3 { transform: rotateY(180deg)  rotateX(45deg)    translateZ(0); }
+    .f4 { transform: rotateY(270deg)  rotateX(45deg)    translateZ(0); }
 
-        @keyframes spin {
-            from {
-                transform: rotateX(0deg) rotateY(0deg);
-            }
-            to {
-                transform: rotateX(360deg) rotateY(360deg);
-            }
-        }
-    </style>
+    /* Bottom pyramid (4 faces) */
+    .f5 { transform: rotateY(0deg)    rotateX(-45deg)   translateZ(0); }
+    .f6 { transform: rotateY(90deg)   rotateX(-45deg)   translateZ(0); }
+    .f7 { transform: rotateY(180deg)  rotateX(-45deg)   translateZ(0); }
+    .f8 { transform: rotateY(270deg)  rotateX(-45deg)   translateZ(0); }
+
+    @keyframes spin {
+      from {
+        transform: rotateX(0deg) rotateY(0deg);
+      }
+      to {
+        transform: rotateX(360deg) rotateY(360deg);
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="scene">
-        <div class="cube">
-            <div class="front"></div>
-            <div class="back"></div>
-            <div class="left"></div>
-            <div class="right"></div>
-            <div class="top"></div>
-            <div class="bottom"></div>
-        </div>
+  <div class="scene">
+    <div class="octahedron">
+      <div class="face f1"></div>
+      <div class="face f2"></div>
+      <div class="face f3"></div>
+      <div class="face f4"></div>
+      <div class="face f5"></div>
+      <div class="face f6"></div>
+      <div class="face f7"></div>
+      <div class="face f8"></div>
     </div>
+  </div>
 </body>
 </html>
