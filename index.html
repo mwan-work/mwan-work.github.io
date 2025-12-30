@@ -7,7 +7,7 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     input, button { margin-bottom: 10px; }
-    textarea { width: 100%; height: 110px; margin-top: 6px; }
+    textarea { width: 100%; height: 80px; margin-top: 6px; }
     .section { margin-top: 18px; }
   </style>
 </head>
@@ -19,34 +19,45 @@
   <button onclick="processImage()">Process</button>
 
   <div class="section">
-    <h3>Card Title (English)</h3>
-    <textarea id="titleText"></textarea>
+    <h3>Card Title</h3>
+    <textarea id="titleJapanese" placeholder="Japanese"></textarea>
+    <textarea id="titleEnglish" placeholder="English"></textarea>
   </div>
 
   <div class="section">
-    <h3>Main Skill (English)</h3>
-    <textarea id="mainSkillText"></textarea>
+    <h3>Main Skill</h3>
+    <textarea id="mainSkillJapanese" placeholder="Japanese"></textarea>
+    <textarea id="mainSkillEnglish" placeholder="English"></textarea>
   </div>
 
   <div class="section">
-    <h3>Sub Skill (English)</h3>
-    <textarea id="subSkillText"></textarea>
+    <h3>Sub Skill</h3>
+    <textarea id="subSkillJapanese" placeholder="Japanese"></textarea>
+    <textarea id="subSkillEnglish" placeholder="English"></textarea>
   </div>
 
   <div class="section">
-    <h3>Awakening Skill (English)</h3>
-    <textarea id="awakeningSkillText"></textarea>
+    <h3>Awakening Skill</h3>
+    <textarea id="awakeningSkillJapanese" placeholder="Japanese"></textarea>
+    <textarea id="awakeningSkillEnglish" placeholder="English"></textarea>
   </div>
 
   <script>
+    const GOOGLE_API_KEY = 'YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY';
+
     async function processImage() {
       const file = document.getElementById('imageInput').files[0];
       if (!file) return alert('Upload an image first');
 
-      document.getElementById('titleText').value = 'Processing...';
-      document.getElementById('mainSkillText').value = '';
-      document.getElementById('subSkillText').value = '';
-      document.getElementById('awakeningSkillText').value = '';
+      const fields = [
+        'title', 'mainSkill', 'subSkill', 'awakeningSkill'
+      ];
+
+      // Reset fields
+      fields.forEach(f => {
+        document.getElementById(f + 'Japanese').value = 'Processing...';
+        document.getElementById(f + 'English').value = '';
+      });
 
       const result = await Tesseract.recognize(file, 'jpn');
       const raw = result.data.text;
@@ -55,25 +66,27 @@
       const joined = lines.join(' ');
 
       const title = lines[0] || '';
+      const mainSkill = (joined.match(/スキル[\s\S]*?子分スキル/) || [''])[0].replace('スキル','');
+      const subSkill = (joined.match(/子分スキル[\s\S]*?覚醒スキル/) || [''])[0].replace('子分スキル','');
+      const awakeningSkill = (joined.match(/覚醒スキル[\s\S]*/) || [''])[0].replace('覚醒スキル','');
 
-      const mainSkillMatch = joined.match(/スキル[\s\S]*?子分スキル/);
-      const subSkillMatch = joined.match(/子分スキル[\s\S]*?覚醒スキル/);
-      const awakeningSkillMatch = joined.match(/覚醒スキル[\s\S]*/);
+      const textPairs = [
+        { jp: title, jpId: 'titleJapanese', enId: 'titleEnglish' },
+        { jp: mainSkill, jpId: 'mainSkillJapanese', enId: 'mainSkillEnglish' },
+        { jp: subSkill, jpId: 'subSkillJapanese', enId: 'subSkillEnglish' },
+        { jp: awakeningSkill, jpId: 'awakeningSkillJapanese', enId: 'awakeningSkillEnglish' }
+      ];
 
-      const mainSkill = mainSkillMatch ? mainSkillMatch[0].replace('スキル', '') : '';
-      const subSkill = subSkillMatch ? subSkillMatch[0].replace('子分スキル', '') : '';
-      const awakeningSkill = awakeningSkillMatch ? awakeningSkillMatch[0].replace('覚醒スキル', '') : '';
-
-      document.getElementById('titleText').value = await translate(title);
-      document.getElementById('mainSkillText').value = await translate(mainSkill);
-      document.getElementById('subSkillText').value = await translate(subSkill);
-      document.getElementById('awakeningSkillText').value = await translate(awakeningSkill);
+      for (const pair of textPairs) {
+        document.getElementById(pair.jpId).value = pair.jp;
+        document.getElementById(pair.enId).value = await translate(pair.jp);
+      }
     }
 
     async function translate(text) {
       if (!text) return '';
 
-      const response = await fetch('https://libretranslate.de/translate', {
+      const res = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -84,8 +97,8 @@
         })
       });
 
-      const data = await response.json();
-      return data.translatedText || '';
+      const data = await res.json();
+      return data.data?.translations?.[0]?.translatedText || '';
     }
   </script>
 </body>
