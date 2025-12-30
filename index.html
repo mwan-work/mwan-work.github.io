@@ -2,56 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Animated Staircase Walk</title>
+  <title>Game Card OCR (Title + Skills)</title>
+  <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      background: #111;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      perspective: 800px;
-    }
-
-    .scene {
-      width: 100px;
-      height: 300px;
-      position: relative;
-      transform-style: preserve-3d;
-      animation: walk 5s infinite linear;
-    }
-
-    .step {
-      position: absolute;
-      width: 100px;
-      height: 20px;
-      background: #4caf50;
-      border: 1px solid #222;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-    }
-
-    @keyframes walk {
-      0%   { transform: translateY(0) translateZ(0) rotateX(20deg); }
-      100% { transform: translateY(300px) translateZ(-300px) rotateX(20deg); }
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, button { margin-bottom: 10px; }
+    textarea { width: 100%; height: 110px; margin-top: 6px; }
+    .section { margin-top: 18px; }
   </style>
 </head>
 <body>
-  <div class="scene">
-    <!-- Repeat steps along Z axis -->
-    <div class="step" style="transform: translateY(0px)    translateZ(0px);"></div>
-    <div class="step" style="transform: translateY(-30px)  translateZ(30px);"></div>
-    <div class="step" style="transform: translateY(-60px)  translateZ(60px);"></div>
-    <div class="step" style="transform: translateY(-90px)  translateZ(90px);"></div>
-    <div class="step" style="transform: translateY(-120px) translateZ(120px);"></div>
-    <div class="step" style="transform: translateY(-150px) translateZ(150px);"></div>
-    <div class="step" style="transform: translateY(-180px) translateZ(180px);"></div>
-    <div class="step" style="transform: translateY(-210px) translateZ(210px);"></div>
-    <div class="step" style="transform: translateY(-240px) translateZ(240px);"></div>
-    <div class="step" style="transform: translateY(-270px) translateZ(270px);"></div>
+  <h2>Upload Image → Extract Title & Skills → English</h2>
+
+  <input type="file" id="imageInput" accept="image/*" />
+  <br />
+  <button onclick="processImage()">Process</button>
+
+  <div class="section">
+    <h3>Card Title (English)</h3>
+    <textarea id="titleText"></textarea>
   </div>
+
+  <div class="section">
+    <h3>Main Skill (English)</h3>
+    <textarea id="mainSkillText"></textarea>
+  </div>
+
+  <div class="section">
+    <h3>Sub Skill (English)</h3>
+    <textarea id="subSkillText"></textarea>
+  </div>
+
+  <div class="section">
+    <h3>Awakening Skill (English)</h3>
+    <textarea id="awakeningSkillText"></textarea>
+  </div>
+
+  <script>
+    async function processImage() {
+      const file = document.getElementById('imageInput').files[0];
+      if (!file) return alert('Upload an image first');
+
+      document.getElementById('titleText').value = 'Processing...';
+      document.getElementById('mainSkillText').value = '';
+      document.getElementById('subSkillText').value = '';
+      document.getElementById('awakeningSkillText').value = '';
+
+      const result = await Tesseract.recognize(file, 'jpn');
+      const raw = result.data.text;
+
+      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      const joined = lines.join(' ');
+
+      const title = lines[0] || '';
+
+      const mainSkillMatch = joined.match(/スキル[\s\S]*?子分スキル/);
+      const subSkillMatch = joined.match(/子分スキル[\s\S]*?覚醒スキル/);
+      const awakeningSkillMatch = joined.match(/覚醒スキル[\s\S]*/);
+
+      const mainSkill = mainSkillMatch ? mainSkillMatch[0].replace('スキル', '') : '';
+      const subSkill = subSkillMatch ? subSkillMatch[0].replace('子分スキル', '') : '';
+      const awakeningSkill = awakeningSkillMatch ? awakeningSkillMatch[0].replace('覚醒スキル', '') : '';
+
+      document.getElementById('titleText').value = await translate(title);
+      document.getElementById('mainSkillText').value = await translate(mainSkill);
+      document.getElementById('subSkillText').value = await translate(subSkill);
+      document.getElementById('awakeningSkillText').value = await translate(awakeningSkill);
+    }
+
+    async function translate(text) {
+      if (!text) return '';
+
+      const response = await fetch('https://libretranslate.de/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          q: text,
+          source: 'ja',
+          target: 'en',
+          format: 'text'
+        })
+      });
+
+      const data = await response.json();
+      return data.translatedText || '';
+    }
+  </script>
 </body>
 </html>
