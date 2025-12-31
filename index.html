@@ -1,105 +1,71 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Game Card OCR (Title + Skills)</title>
-  <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    input, button { margin-bottom: 10px; }
-    textarea { width: 100%; height: 80px; margin-top: 6px; }
-    .section { margin-top: 18px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinning Cube</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+
+        .scene {
+            width: 200px;
+            height: 200px;
+            perspective: 800px;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) rotateY(0deg);
+            animation: spin 5s infinite linear;
+        }
+
+        .cube div {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .front  { transform: rotateY(0deg) translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .right  { transform: rotateY(90deg) translateZ(100px); }
+        .top    { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+        @keyframes spin {
+            from {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            to {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+    </style>
 </head>
 <body>
-  <h2>Upload Image → Extract Title & Skills → English</h2>
-
-  <input type="file" id="imageInput" accept="image/*" />
-  <br />
-  <button onclick="processImage()">Process</button>
-
-  <div class="section">
-    <h3>Card Title</h3>
-    <textarea id="titleJapanese" placeholder="Japanese"></textarea>
-    <textarea id="titleEnglish" placeholder="English"></textarea>
-  </div>
-
-  <div class="section">
-    <h3>Main Skill</h3>
-    <textarea id="mainSkillJapanese" placeholder="Japanese"></textarea>
-    <textarea id="mainSkillEnglish" placeholder="English"></textarea>
-  </div>
-
-  <div class="section">
-    <h3>Sub Skill</h3>
-    <textarea id="subSkillJapanese" placeholder="Japanese"></textarea>
-    <textarea id="subSkillEnglish" placeholder="English"></textarea>
-  </div>
-
-  <div class="section">
-    <h3>Awakening Skill</h3>
-    <textarea id="awakeningSkillJapanese" placeholder="Japanese"></textarea>
-    <textarea id="awakeningSkillEnglish" placeholder="English"></textarea>
-  </div>
-
-  <script>
-    const GOOGLE_API_KEY = 'YOUR_GOOGLE_CLOUD_TRANSLATE_API_KEY';
-
-    async function processImage() {
-      const file = document.getElementById('imageInput').files[0];
-      if (!file) return alert('Upload an image first');
-
-      const fields = [
-        'title', 'mainSkill', 'subSkill', 'awakeningSkill'
-      ];
-
-      // Reset fields
-      fields.forEach(f => {
-        document.getElementById(f + 'Japanese').value = 'Processing...';
-        document.getElementById(f + 'English').value = '';
-      });
-
-      const result = await Tesseract.recognize(file, 'jpn');
-      const raw = result.data.text;
-
-      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
-      const joined = lines.join(' ');
-
-      const title = lines[0] || '';
-      const mainSkill = (joined.match(/スキル[\s\S]*?子分スキル/) || [''])[0].replace('スキル','');
-      const subSkill = (joined.match(/子分スキル[\s\S]*?覚醒スキル/) || [''])[0].replace('子分スキル','');
-      const awakeningSkill = (joined.match(/覚醒スキル[\s\S]*/) || [''])[0].replace('覚醒スキル','');
-
-      const textPairs = [
-        { jp: title, jpId: 'titleJapanese', enId: 'titleEnglish' },
-        { jp: mainSkill, jpId: 'mainSkillJapanese', enId: 'mainSkillEnglish' },
-        { jp: subSkill, jpId: 'subSkillJapanese', enId: 'subSkillEnglish' },
-        { jp: awakeningSkill, jpId: 'awakeningSkillJapanese', enId: 'awakeningSkillEnglish' }
-      ];
-
-      for (const pair of textPairs) {
-        document.getElementById(pair.jpId).value = pair.jp;
-        document.getElementById(pair.enId).value = await translate(pair.jp);
-      }
-    }
-
-    async function translate(text) {
-      if (!text) return '';
-
-      const res = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          q: text,
-          source: 'ja',
-          target: 'en',
-          format: 'text'
-        })
-      });
-
-      const data = await res.json();
-      return data.data?.translations?.[0]?.translatedText || '';
-    }
-  </script>
+    <div class="scene">
+        <div class="cube">
+            <div class="front"></div>
+            <div class="back"></div>
+            <div class="left"></div>
+            <div class="right"></div>
+            <div class="top"></div>
+            <div class="bottom"></div>
+        </div>
+    </div>
 </body>
 </html>
